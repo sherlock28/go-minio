@@ -1,0 +1,17 @@
+{
+  "name": "go-minio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec go run main.go --signal SIGNTERM",
+    "test": "npx newman run test/Go-MinIO.postman_collection.json -n 20"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "newman": "5.3.2",
+    "nodemon": "2.0.20"
+  }
+}
