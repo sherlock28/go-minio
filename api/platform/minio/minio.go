@@ -5,8 +5,16 @@ import (
 	"log"
 	"os"
 
+	"sync"
+
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+)
+
+var (
+	once        sync.Once
+	minioClient *minio.Client
+	errInit     error
 )
 
 func MinioConnection() (*minio.Client, error) {
@@ -18,14 +26,17 @@ func MinioConnection() (*minio.Client, error) {
 	useSSL := false
 
 	// Initialize minio client object.
-	minioClient, errInit := minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
-	})
+	once.Do(func() {
+		minioClient, errInit = minio.New(endpoint, &minio.Options{
+			Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+			Secure: useSSL,
+		})
 
-	if errInit != nil {
-		log.Fatalln(errInit)
-	}
+		if errInit != nil {
+			log.Fatalln(errInit)
+		}
+		log.Printf("Successfully connected to the database")
+	})
 
 	// Make a new bucket called dev-minio.
 	bucketName := os.Getenv("MINIO_BUCKET")
