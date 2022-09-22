@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	guuid "github.com/google/uuid"
@@ -12,7 +13,15 @@ import (
 	minioUpload "github.com/sherlock28/go-minio/api/platform/minio"
 )
 
+func track(name string) func() {
+	start := time.Now()
+	return func() {
+		log.Printf("-----> execution time %s\n", time.Since(start))
+	}
+}
+
 func UploadFile(c *fiber.Ctx) error {
+	defer track("main")()
 	ctx := context.Background()
 
 	bucketName := os.Getenv("MINIO_BUCKET")
